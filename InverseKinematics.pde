@@ -12,6 +12,8 @@ final int left  = 37;
 final int up    = 38;
 final int down  = 40;
 final int TRACE = 84;
+final int W     = 87;
+final int S     = 83;
 
 //flags
 int traceFlag = 0;
@@ -19,8 +21,10 @@ int traceFlag = 0;
 PVector l1, l2;
 float link1      = 300;
 float link2      = 200;
+float link3      = 100;
 float theta1     = 45;
 float theta2     = 30;
+float theta3     = 0;
 PVector effector = new PVector(link1+link2,0);
 PVector angles   = new PVector(0,0);
 
@@ -34,9 +38,10 @@ void setup()
 void draw()
 {
   background(0);
-  angles = invKin(effector);
-  point(effector.x, effector.y);
-  //angles = invKin(new PVector(mouseX, height - mouseY));
+  //angles = invKin(effector);
+  //point(effector.x, effector.y);
+  angles = invKin(new PVector(mouseX - link3*cos(radians(theta3)), 
+                  height - mouseY - link3*sin(radians(theta3))));
   //println(str(mouseX) + "," + str(height - mouseY));
   theta1 = angles.x;
   theta2 = angles.y;
@@ -63,11 +68,14 @@ void drawArm()
   drawLink(link1*cos(radians(theta1)), 
             link1*sin(radians(theta1)), 
             link2, theta1 - theta2);
+  drawLink(link1*cos(radians(theta1))+link2*cos(radians(theta1-theta2)),
+           link1*sin(radians(theta1))+link2*sin(radians(theta1-theta2)),
+           link3, theta3);
 }
 
 void keyPressed()
 {
-  //println(keyCode);
+  println(keyCode);
   switch(keyCode)
   {
     case left:
@@ -91,6 +99,13 @@ void keyPressed()
     if(traceFlag==1) println("Path tracing on! ");
     if(traceFlag!=1) println("Path tracing off.");
     break;
+    
+    case W:
+    theta3 -= 1;
+    break;
+    
+    case S:
+    theta3 += 1;
   }
   print("Effector: ");
   println(effector);
