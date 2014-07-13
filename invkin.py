@@ -7,9 +7,14 @@ DEGREES = 1
 
 l1 = 100 #Length of link 1
 l2 = 100 #length of link 2
+l3 = 50  #length of link 3
+
+#This is the constant angle l3 must maintain
+#with the ground plane.
+l3ang = 0
 
 #IK for just the 2 links
-def invkin2(x, y, angleMode=RADIANS):
+def invkin2(x, y, angleMode=DEGREES):
     #stuff for calculating th2
     r_2 = x**2 + y**2
     l_sq = l1**2 + l2**2
@@ -35,7 +40,7 @@ def invkin2(x, y, angleMode=RADIANS):
         return math.degrees(th1), math.degrees(th2)
 
 #IK for two links plus the base drum
-def invkin3(x, y, z, angleMode=RADIANS):
+def invkin3(x, y, z, angleMode=DEGREES):
     th0 = math.atan2(z,x)
     x = (x**2 + z**2)**0.5
     #stuff for calculating th2
@@ -65,9 +70,11 @@ def invkin3(x, y, z, angleMode=RADIANS):
             math.degrees(th2)
 
 #IK for base drum plus three links
-def invkin4(x, y, z, angleMode=RADIANS):
+def invkin4(x, y, z, angleMode=DEGREES):
     th0 = math.atan2(z,x)
     x = (x**2 + z**2)**0.5
+    x = x - l3*math.cos(l3ang)
+    y = y - l3*math.sin(l3ang)
     #stuff for calculating th2
     r_2 = x**2 + y**2
     l_sq = l1**2 + l2**2
@@ -86,13 +93,15 @@ def invkin4(x, y, z, angleMode=RADIANS):
     gamma = math.atan2(k2,k1)
     #calculate th1
     th1 = math.atan2(y,x) - gamma
+    th3 = th1 - th2 - l3ang
     
 
     if(angleMode == RADIANS):
-        return th0, th1, th2
+        return th0, th1, th2, th3
     else:
         return math.degrees(th0), math.degrees(th1),\
-            math.degrees(th2)
+            math.degrees(th2), math.degrees(th3)
+
 
 if __name__ == "__main__":
     print invkin2(0, 200, DEGREES)
