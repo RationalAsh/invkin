@@ -65,8 +65,7 @@ def invkin3(x, y, z, angleMode=DEGREES):
     output:
     th0 - angle of the base motor
     th1 - angle of the first link w.r.t ground
-    th2 - angle of the second link w.r.t the first
-    """
+    th2 - angle of the second link w.r.t the first"""
     th0 = math.atan2(z,x)
     x = (x**2 + z**2)**0.5
     #stuff for calculating th2
@@ -117,8 +116,7 @@ def invkin4(x, y, z, angleMode=DEGREES):
     th0 - angle of the base motor
     th1 - angle of the first link w.r.t ground
     th2 - angle of the second link w.r.t the first
-    th3 - angle of the third link w.r.t the second link
-"""
+    th3 - angle of the third link w.r.t the second link"""
     try:
         th0 = math.atan2(z,x)
         x = (x**2 + z**2)**0.5
