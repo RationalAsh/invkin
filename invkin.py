@@ -18,11 +18,14 @@ def invkin2(x, y, angleMode=DEGREES):
     """Returns the angles of the first two links
     in the robotic arm as a list.
     returns -> (th1, th2)
-    
+    input:
     x - The x coordinate of the effector
     y - The y coordinate of the effector
     angleMode - tells the function to give the angle in
-                degrees/radians. Default is degrees"""
+                degrees/radians. Default is degrees
+    output:
+    th1 - angle of the first link w.r.t ground
+    th2 - angle of the second link w.r.t the first"""
 
     #stuff for calculating th2
     r_2 = x**2 + y**2
@@ -58,7 +61,12 @@ def invkin3(x, y, z, angleMode=DEGREES):
     y - The y coordinate of the effector
     z - The z coordinate of the effector
     angleMode - tells the function to give the angle in
-                degrees/radians. Default is degrees"""
+                degrees/radians. Default is degrees
+    output:
+    th0 - angle of the base motor
+    th1 - angle of the first link w.r.t ground
+    th2 - angle of the second link w.r.t the first
+    """
     th0 = math.atan2(z,x)
     x = (x**2 + z**2)**0.5
     #stuff for calculating th2
@@ -103,7 +111,14 @@ def invkin4(x, y, z, angleMode=DEGREES):
     y - The y coordinate of the effector
     z - The z coordinate of the effector
     angleMode - tells the function to give the angle in
-                degrees/radians. Default is degrees"""
+                degrees/radians. Default is degrees
+
+    output:
+    th0 - angle of the base motor
+    th1 - angle of the first link w.r.t ground
+    th2 - angle of the second link w.r.t the first
+    th3 - angle of the third link w.r.t the second link
+"""
     try:
         th0 = math.atan2(z,x)
         x = (x**2 + z**2)**0.5
