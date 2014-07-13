@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 
 import math
@@ -16,6 +15,15 @@ l3ang = 0
 
 #IK for just the 2 links
 def invkin2(x, y, angleMode=DEGREES):
+    """Returns the angles of the first two links
+    in the robotic arm as a list.
+    returns -> (th1, th2)
+    
+    x - The x coordinate of the effector
+    y - The y coordinate of the effector
+    angleMode - tells the function to give the angle in
+                degrees/radians. Default is degrees"""
+
     #stuff for calculating th2
     r_2 = x**2 + y**2
     l_sq = l1**2 + l2**2
@@ -42,6 +50,15 @@ def invkin2(x, y, angleMode=DEGREES):
 
 #IK for two links plus the base drum
 def invkin3(x, y, z, angleMode=DEGREES):
+    """Returns the angles of the first two links and
+     the base drum in the robotic arm as a list.
+    returns -> (th0, th1, th2)
+    
+    x - The x coordinate of the effector
+    y - The y coordinate of the effector
+    z - The z coordinate of the effector
+    angleMode - tells the function to give the angle in
+                degrees/radians. Default is degrees"""
     th0 = math.atan2(z,x)
     x = (x**2 + z**2)**0.5
     #stuff for calculating th2
@@ -72,6 +89,21 @@ def invkin3(x, y, z, angleMode=DEGREES):
 
 #IK for base drum plus three links
 def invkin4(x, y, z, angleMode=DEGREES):
+    """Returns the angles of the first three links and
+    the base drum in the robotic arm as a list. Since only
+    three degrees of freedom are required to make the arm go
+    to any location in 3D space this link's job is to keep
+    the gripper at a constant angle relative to the ground.
+    This is useful in situations where the arm is carrying
+    objects like glasses of fluid. This link makes sure that
+    the arm doesn't tip over the glass and spill the fluid
+    returns -> (th0, th1, th2, th3)
+    
+    x - The x coordinate of the effector
+    y - The y coordinate of the effector
+    z - The z coordinate of the effector
+    angleMode - tells the function to give the angle in
+                degrees/radians. Default is degrees"""
     try:
         th0 = math.atan2(z,x)
         x = (x**2 + z**2)**0.5
