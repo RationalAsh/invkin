@@ -1,14 +1,14 @@
 /* 
-  1. Six numbers separated by some separator
-  2. Get each number and store it in a variable
-  3. Display these numbers over the serial monitor.
-  4. Try using SerialEvent
+  The arduino must get six numbers 
+  separated by commas and terminated by a 
+  newline character for this to work. 
   
-  Steps:
-  1. Get SerialEvent working with Hello World String
-  3. Get Serial Event working with integer string
-  4. Figure out how to parse each int.
-  5. Store ints in variable and display.
+  The parseInt function takes care of reading
+  the integers in sequence from the serial input
+  stream.
+  
+  The arduino will then send these angles to the
+  microcontroller that controls the concerned link.
 */
 
 #include <SoftwareSerial.h>
