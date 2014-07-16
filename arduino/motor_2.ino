@@ -1,7 +1,8 @@
 #include <Wire.h>
 
+
 double potcurval;    // variable to read the value from the analog pin 
-int angel; //Integer value of angle
+
 double angle =0;
 
 double curangle,kP=28.00,kI=42,kD=4,Last=0;
@@ -29,7 +30,9 @@ void setup()
   pinMode(12,OUTPUT);
   pinMode(11,OUTPUT);
   Wire.begin(2);
+  Wire.onReceive(receiveEvent);
   Serial.begin(9600);
+  pinMode(13, OUTPUT);
 } 
  void Errorcalc()
  {
@@ -40,8 +43,10 @@ void setup()
  }
 void loop() 
 {
-  
+  Serial.print("got: ");
   Serial.println(angle);  
+  if(angle > 127) digitalWrite(13, HIGH);
+	   else digitalWrite(13, LOW);
   
                  Errorcalc();
                 if (abs(Error) <.8){ // prevent integral 'windup'
