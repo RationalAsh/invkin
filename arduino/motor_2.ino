@@ -1,11 +1,11 @@
-
+#include <Wire.h>
 
 double potcurval;    // variable to read the value from the analog pin 
 int angel; //Integer value of angle
- double angle =0;
+double angle =0;
 
- double curangle,kP=28.00,kI=42,kD=4,Last=0;
- double P=0,I=0,D=0,Drive,Error=0,Integral=0;
+double curangle,kP=28.00,kI=42,kD=4,Last=0;
+double P=0,I=0,D=0,Drive,Error=0,Integral=0;
  
 
  void backward() {
@@ -27,25 +27,21 @@ void setup()
   // myservo.attach(6);  // attaches the servo on pin 9 to the servo object 
   pinMode(9,OUTPUT);
   pinMode(12,OUTPUT);
-  Serial.begin(9600);
   pinMode(11,OUTPUT);
+  Wire.begin(2);
   Serial.begin(9600);
 } 
  void Errorcalc()
  {
    potcurval=(double)analogRead(A0)+1;
    potcurval=(potcurval/1024)*5;
-    curangle=(potcurval/5)*270;
-   
-                Error = curangle-angle;
+   curangle=(potcurval/5)*270;
+   Error = curangle-angle;
  }
 void loop() 
-{             if(Serial.available()>0)
 {
-   angle=(double)Serial.parseInt()+85;
- 
-}
-               
+  
+  Serial.println(angle);  
   
                  Errorcalc();
                 if (abs(Error) <.8){ // prevent integral 'windup'
@@ -94,4 +90,10 @@ void loop()
     Serial.println(D);
     */
 
+}
+
+void receiveEvent(int howMany)
+{
+  int x = Wire.read();
+  angle = (double) x;
 }
