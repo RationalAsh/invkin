@@ -1,4 +1,4 @@
 invkin
 ======
 
-Some inverse kinematics for this robotic arm me and my friends are building.
+Most of the code and inverse kinematics for the robotic arm me and my friends are building.
