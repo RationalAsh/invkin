@@ -1,13 +1,11 @@
 #include <Wire.h> 
-double potcurval;    // variable to read the value from the analog pin 
-int angel; //Integer value of angle
+volatile double potcurval;    // variable to read the value from the analog pin 
+volatile int angel; //Integer value of angle
  double angle =0;
-
- double curangle,kP=30.00,kI=0,kD=0,Last=0;
- double P=0,I=0,D=0,Drive,Error=0,Integral=0;
+volatile int x;
+ volatile double curangle,kP=30.00,kI=0,kD=0,Last=0;
+ volatile double P=0,I=0,D=0,Drive,Error=0,Integral=0;
  
- String inputString = "";         // a string to hold incoming data
-boolean stringComplete = false;  // whether the string is complete
 
  void backward()
  {
@@ -32,7 +30,6 @@ void setup()
   Serial.begin(9600);
   pinMode(11,OUTPUT);
   pinMode(13, OUTPUT);
-  inputString.reserve(5);
   Wire.begin(1);
   Wire.onReceive(receiveEvent);
 } 
@@ -44,9 +41,25 @@ void setup()
    
                 Error = curangle-angle;
  }
+ 
+ void receiveEvent(int howMany)
+  {
+    
+    if(Wire.available()>0)
+    {
+  x = Wire.read();
+  if(x == 40) 
+  digitalWrite(13, HIGH);
+  else digitalWrite(13, LOW);
+ angle = (double) x;
+    }  
+}
+
+ 
+ 
 void loop() 
-{ 
-	   
+{               
+   
                  Errorcalc();
                 if (abs(Error) <2.2){ // prevent integral 'windup'
                 Integral = Integral + Error; // accumulate the error integral
@@ -99,12 +112,3 @@ void loop()
 
 }
 
-void receiveEvent(int howMany)
-{
-  int x = Wire.read();
-  angle = (double) x;
-  Serial.print("got: ");
-  Serial.println(angle);
-  if(angle == 40) digitalWrite(13, HIGH);
-  else digitalWrite(13, LOW);
-}
