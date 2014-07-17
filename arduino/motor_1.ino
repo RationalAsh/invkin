@@ -48,8 +48,7 @@ void loop()
 { 
            Serial.print("got: ");
 	   Serial.println(angle);
-	   if(angle > 127) digitalWrite(13, HIGH);
-	   else digitalWrite(13, LOW);
+	   
                  Errorcalc();
                 if (abs(Error) <2.2){ // prevent integral 'windup'
                 Integral = Integral + Error; // accumulate the error integral
@@ -106,4 +105,7 @@ void receiveEvent(int howMany)
 {
   int x = Wire.read();
   angle = (double) x;
+  
+  if(angle == 40) digitalWrite(13, HIGH);
+  else digitalWrite(13, LOW);
 }
