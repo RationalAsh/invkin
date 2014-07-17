@@ -1,72 +1,84 @@
 /* 
-  The arduino must get six numbers 
-  separated by commas and terminated by a 
-  newline character for this to work. 
-  
-  The parseInt function takes care of reading
-  the integers in sequence from the serial input
-  stream.
-  
-  The arduino will then send these angles to the
-  microcontroller that controls the concerned link.
+  Radical change of plan! We're going
+  to use I2C instead of serial! So the
+  whole file is going to be rewritten.
+  Goodbye pesky serial communication!
 */
 
-#include <SoftwareSerial.h>
+#include <Wire.h>
+#define M1 1
+#define M2 2
+#define M3 3
+#define M4 4
+#define M5 5
 
-SoftwareSerial m0(2,3);
-SoftwareSerial m1(4,5);
-SoftwareSerial m2(6,7);
-SoftwareSerial m3(8,9);
-SoftwareSerial m4(10,11);
-
-int th0 = 0;
+//Declare all the angle variables
 int th1 = 0;
 int th2 = 0;
 int th3 = 0;
 int th4 = 0;
 int th5 = 0;
+int th6 = 0;
 
-void setup() {
-  // initialize serials:
+void setup() 
+{
+  // initialize serial
   Serial.begin(9600);
-  m0.begin(9600);
-  m1.begin(9600);
-  m2.begin(9600);
-  m3.begin(9600);
-  m4.begin(9600);
+  //
+  Wire.begin();
 }
 
-void loop() {
+void loop() 
+{
   // if there's any serial available, read it:
-  while (Serial.available() > 0) {
+  while (Serial.available() > 0) 
+  {
 
-    // look for the next valid integer in the incoming serial stream:
-    th0 = Serial.parseInt(); 
-    m0.write(th0);
-    m0.write('\n');
-    // do it again:
+    // look for the first valid integer in the incoming serial stream:
     th1 = Serial.parseInt();
-    m1.write(th1);
-    m1.write('\n');
-    // do it again:
+    //Transmit the angle to the correct I2C slave
+    Wire.beginTransmission(M1);
+    Wire.write(th1);
+    Wire.endTransmission();
+    
+    //Look for the next integer
     th2 = Serial.parseInt();
-    m2.write(th2); 
-    m2.write('\n');
-    // do it yet again
+    //Transmit the angle to the correct I2C slave
+    Wire.beginTransmission(M2);
+    Wire.write(th2);
+    Wire.endTransmission();
+    
+    //Do it again
     th3 = Serial.parseInt();
-    m3.write(th3);
-    m3.write('\n');
+    //Transmit the angle to the correct I2C slave
+    Wire.beginTransmission(M3);
+    Wire.write(th3);
+    Wire.endTransmission();
+    
     //And again
     th4 = Serial.parseInt();
-    m4.write(th4);
-    m4.write('\n');
-    //And again and again and again
+    //Transmit the angle to the correct I2C slave
+    Wire.beginTransmission(M4);
+    Wire.write(th4);
+    Wire.endTransmission();
+    
+    //And again and again
     th5 = Serial.parseInt();
+    //Transmit the angle to the correct I2C slave
+    Wire.beginTransmission(M5);
+    Wire.write(th5);
+    Wire.endTransmission();
+    
+    //Aaaaaaaand agaaaaain
+    th6 = Serial.parseInt();
+    
 
     // look for the newline. That's the end of your
     // sentence:
-    if (Serial.read() == '\n') {
-      // print the three numbers in one string as hexadecimal:
+    if (Serial.read() == '\n') 
+    {
+      //Print all the angles that were received
+      //For debugging.
       Serial.print("Got angles: (");
       Serial.print(th0);
       Serial.print(",");
