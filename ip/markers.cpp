@@ -3,6 +3,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <fstream>
+#include "include/netTransmit.h"
+#include <math.h>
 
 #define CAMERA 0
 #define VWIDTH 640
@@ -16,6 +18,15 @@ using namespace std;
 Scalar linecolor = Scalar(0,255,0);
 Scalar rectcolor = Scalar(0,200,0);
 
+
+//Function to convert from number to string
+template <typename T>
+string NumberToString (T Number)
+{
+    ostringstream ss;
+    ss << Number;
+    return ss.str();
+}
 
 //Function to find the centroid of a binary image
 void getCentroid(Mat &thresholded_image, Point &Centroid, int &Area)
@@ -35,6 +46,15 @@ void getCentroid(Mat &thresholded_image, Point &Centroid, int &Area)
     Area        = int(M00);
 }
 
+//Simplified puttext
+void ptext(Mat& img, const string& text, Point org)
+{
+    static double FSIZE = 0.5;
+    static int THICKNESS = 1;
+    putText(img, text, org, FONT_HERSHEY_SIMPLEX, FSIZE, 
+	    Scalar(0,255,0), THICKNESS, CV_AA);
+}
+
 int main(int argc, char** argv)
 {
     Mat frame, head, tail;
@@ -43,19 +63,32 @@ int main(int argc, char** argv)
     int rlower_h = 0;   int glower_h = 0;   int blower_h = 0;
     int rupper_h = 255; int gupper_h = 255; int bupper_h = 255;
     
-    int rlower_t = 0;   int glower_t = 0;   int blower_t = 0;
-    int rupper_t = 255; int gupper_t = 255; int bupper_t = 255;
+    //int rlower_t = 0;   int glower_t = 0;   int blower_t = 0;
+    //int rupper_t = 255; int gupper_t = 255; int bupper_t = 255;
 
     int max_thresh = 255;
 
-    Scalar head_lower, head_upper,
-	tail_lower, tail_upper;
-    Point head_centroid, tail_centroid, direction;
+    Scalar head_lower, head_upper;
+    //tail_lower, tail_upper;
+    Point head_centroid, direction;
+    double angle;
+    Point tail_centroid = Point(VWIDTH/2, VHEIGHT/2);
     Point head_prev(0,0); Point motion(0,0);
     int head_area, tail_area;
+    char *msg   = "Hello World!";
+    char *up    = "U";
+    char *down  = "D";
+    char *left  = "L";
+    char *right = "R";
+    char *stop  = "S";
+    string disp;
+
+    //class to transmit the arm motion.
+    netTransmit dataFire("127.0.0.1", 31415);
+
 
     namedWindow("head");
-    namedWindow("tail");
+    //namedWindow("tail");
     createTrackbar("R Upper", "head", &rupper_h, max_thresh, NULL);
     createTrackbar("R Lower", "head", &rlower_h, max_thresh, NULL);
     createTrackbar("G Upper", "head", &gupper_h, max_thresh, NULL);
@@ -63,12 +96,12 @@ int main(int argc, char** argv)
     createTrackbar("B Upper", "head", &bupper_h, max_thresh, NULL);
     createTrackbar("B Lower", "head", &blower_h, max_thresh, NULL);
 
-    createTrackbar("R Upper", "tail", &rupper_t, max_thresh, NULL);
-    createTrackbar("R Lower", "tail", &rlower_t, max_thresh, NULL);
-    createTrackbar("G Upper", "tail", &gupper_t, max_thresh, NULL);
-    createTrackbar("G Lower", "tail", &glower_t, max_thresh, NULL);
-    createTrackbar("B Upper", "tail", &bupper_t, max_thresh, NULL);
-    createTrackbar("B Lower", "tail", &blower_t, max_thresh, NULL);
+    //createTrackbar("R Upper", "tail", &rupper_t, max_thresh, NULL);
+    //createTrackbar("R Lower", "tail", &rlower_t, max_thresh, NULL);
+    //createTrackbar("G Upper", "tail", &gupper_t, max_thresh, NULL);
+    //createTrackbar("G Lower", "tail", &glower_t, max_thresh, NULL);
+    //createTrackbar("B Upper", "tail", &bupper_t, max_thresh, NULL);
+    //createTrackbar("B Lower", "tail", &blower_t, max_thresh, NULL);
 
     VideoCapture camera;
 
@@ -86,30 +119,33 @@ int main(int argc, char** argv)
 	//Threshold out the red marker(head)
 	inRange(frame, Scalar(rlower_h, glower_h, blower_h),
 		Scalar(rupper_h, gupper_h, bupper_h), head);
-	inRange(frame, Scalar(rlower_t, glower_t, blower_t),
-		Scalar(rupper_t, gupper_t, bupper_t), tail);
+	//inRange(frame, Scalar(rlower_t, glower_t, blower_t),
+	//	Scalar(rupper_t, gupper_t, bupper_t), tail);
 	medianBlur(head, head, 7);
              
 	//Get coordinates of the tail marker
-	getCentroid(tail, tail_centroid, tail_area);
+	//getCentroid(tail, tail_centroid, tail_area);
 	//Get coordinates of the head marker
 	getCentroid(head, head_centroid, head_area);
 	//Subtract the coordinates to get a direction vector
 	direction = head_centroid - tail_centroid;
-
+	angle = (180.0/3.14159)*atan2(-1*direction.y, direction.x);
 	//Draw the appropriate stuff on the image
 	motion = head_centroid - head_prev;
 	line(frame, tail_centroid, head_centroid, linecolor);
 	circle(frame, head_centroid, RADIUS, linecolor);
 	
+	ptext(frame, NumberToString(angle), head_centroid+Point(20, 0));
+	if((angle>0)&&(angle<45)) ptext(frame, string(right), Point(VWIDTH/2, 40));
+	
 	//cout<<"Direction: "<<direction<<endl;
 	//Use the direction vector to decide which way the arm must move
 	//Display the motion as output on the terminal
 	imshow("head", head);
-	imshow("tail", tail);
 	imshow("frame", frame);
 	
 	head_prev = head_centroid;
+	//dataFire.transmit(msg);
 	
 	keypress = waitKey(10);
 	if(keypress == 27) break;
