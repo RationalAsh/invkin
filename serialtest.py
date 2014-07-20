@@ -1,17 +1,31 @@
 #!/usr/bin/python
 
-import serial
 import time
+import serial
+import socket
 
-ser = serial.Serial('/dev/ttyUSB3', 9600)
-count = 0
+UDP_IP = "127.0.0.1"
+UDP_PORT = 31415
+
+ser = serial.Serial('/dev/ttyACM1', 9600)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+sock.bind((UDP_IP, UDP_PORT))
 
 while True:
-    ser.write('1,2,3,4,5,6\n')
-    print ser.readline()
-    time.sleep(2)
-    count += 1
-    if(count > 5):
+    data, addr = sock.recvfrom(10)
+    print "Recieved message: ", data
+    if(data == 'exit'):
         break
+    if(data == 'L'):
+        ser.write('l\n')
+        print "Going Left!"
+    if(data == 'R'):
+        ser.write('r\n');
+        print "Going right!"
+    if(data == 'S'):
+        ser.write('h\n')
+        print "Stopping!"
 
 ser.close()
+
