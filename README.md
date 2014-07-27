@@ -10,3 +10,6 @@ For the real arm, the inverse kinematics involves a third dimension and a few ro
 
 The first prototype of the arm has been made. Photos of this prototype will be uploaded
 soon. :)
+
+Photos of the prototype:
+
